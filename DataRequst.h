@@ -39,8 +39,8 @@ private:
     int epoll_fd_;
     
     uint32_t events_;
-    std::string in_buffer_;
-    std::string out_buffer_;
+    std::string in_buffer_;    //接受的信息
+    std::string out_buffer_;   //发送的信息
 
     bool enable_read_;
     bool enable_write_;

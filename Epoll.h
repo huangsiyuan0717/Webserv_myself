@@ -20,7 +20,7 @@ public:
     void epoll_del(int fd, uint32_t events);
     void my_epoll_wait(int listen_fd, int max_events, int timeout);
 
-    std::vector<DataRequst> getRequest(int fd, int event_num);
+    std::vector<DataRequst> getRequest(int fd, int event_num);    //获得有事件发生的数组
 
 private:
     static const int MAXFDS = 100000;
