@@ -1,0 +1,3 @@
+/home/hsy/study_c++/Webserv_myself/build/CMakeFiles/rebuild_cache.dir
+/home/hsy/study_c++/Webserv_myself/build/CMakeFiles/main.dir
+/home/hsy/study_c++/Webserv_myself/build/CMakeFiles/edit_cache.dir
