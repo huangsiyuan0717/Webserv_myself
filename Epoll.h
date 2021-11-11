@@ -12,9 +12,10 @@ class Epoll
 public:
     typedef std::shared_ptr<DataRequst> SP_DataRequest;
 
-    Epoll(int max_events, int listen_num);
+    Epoll();
     ~Epoll();
 
+    int myepoll_creat(int max_events, int listen_num);
     void epoll_add(int fd, SP_DataRequest request, uint32_t events);
     void epoll_mod(int fd, SP_DataRequest request, uint32_t events);
     void epoll_del(int fd, uint32_t events);
