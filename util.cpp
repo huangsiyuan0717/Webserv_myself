@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include <signal.h>
+#include <iostream>
 
 void handSignal(){
     struct sigaction sa;
@@ -11,6 +12,19 @@ void handSignal(){
     if(sigaction(SIGPIPE, &sa, nullptr)){
         return;
     }
+}
+
+int setSocketNonBlocking(int fd){
+    int flag = fcntl(fd, F_GETFL, 0);
+    if(flag < 0){
+        std::cout << "GETFL failed!" << std::endl;
+        return -1;
+    }
+    flag = flag | O_NONBLOCK;
+    if(fcntl(fd, F_SETFL, flag) < 0){
+        return -1;
+    }
+    return 0;
 }
 
 

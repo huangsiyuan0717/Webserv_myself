@@ -14,10 +14,8 @@ const int PORT = 5555;
 int main(int argc, char **argv){
     handSignal();
 
-    Epoll epoll;    //创建mian_reactor
-    if(epoll.myepoll_creat(MAXEVENTS, LISTEN_NUM) < 0){
-
-    }
+    Epoll epoll(MAXEVENTS, LISTEN_NUM);    //创建mian_reactor
+    
 
     ThreadPoll threadpoll(THREAD_NUM, QUEUE_SIZE);      //创建线城池
 
@@ -27,14 +25,14 @@ int main(int argc, char **argv){
     //TODO
 
     //创建事件类，并且加入到epoll堆中，并且监听
-    std::shared_ptr<DataRequst> data_req(new DataRequst);
+    SP_DataRequest data_req;
     data_req->setFd(listen_fd);
 
     epoll.epoll_add(listen_fd, data_req, EPOLLIN | EPOLLET);
 
     //监听事件，在线程任务中处理
     while(true){
-        epoll.my_epoll_wait(listen_fd, MAXEVENTS, -1);
+        epoll.my_epoll_wait(listen_fd, -1);
     }
 
     return 0;

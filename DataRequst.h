@@ -8,6 +8,7 @@ public:
     typedef std::shared_ptr<DataRequst> SP_DataRequest;
 
     DataRequst();
+    DataRequst(int epoll_fd, int fd);
     ~DataRequst();
 
     int getFd() { return fd_; };
