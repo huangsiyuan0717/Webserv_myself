@@ -97,6 +97,8 @@ std::vector<SP_DataRequest> Epoll::getRequest(int listen_fd, int event_count){
             std::cout << "fd < 3" << std::endl;
             break;
         }else if(fd == listen_fd){
+            acceptConn();
+        }else{
             
         }
     }
