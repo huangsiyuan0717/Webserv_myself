@@ -58,8 +58,13 @@ void Epoll::my_epoll_wait(int listen_fd, int timeout){
         std::cout << "epoll_wait failed!" << std::endl;
     }
     auto data_reqs = getRequest(listen_fd, event_count);
-
-
+    if(data_reqs.size() > 0){
+        for(auto &req : data_reqs){
+            if(ThreadPoll::threadpollAdd(req) < 0){
+                break;    //continue试试
+            }
+        }
+    }
 }
 
 void Epoll::acceptConn(int listen_fd){
@@ -85,7 +90,7 @@ void Epoll::acceptConn(int listen_fd){
 
         SP_DataRequest req(new DataRequst(epoll_fd_, accept_fd));
         uint32_t events = EPOLLIN | EPOLLET | EPOLLONESHOT;
-        epoll_add(accept_fd, req);
+        epoll_add(accept_fd, req, events);
     }
 }
 
@@ -97,11 +102,33 @@ std::vector<SP_DataRequest> Epoll::getRequest(int listen_fd, int event_count){
             std::cout << "fd < 3" << std::endl;
             break;
         }else if(fd == listen_fd){
-            acceptConn();
+            acceptConn(listen_fd);
         }else{
-            
+
+            //排除错误事件
+            if((events_[i].events & EPOLLERR) || events_[i].events & EPOLLHUP){
+                std::cout << "events error!" << std::endl;
+                fd2req[fd].reset();
+                continue;
+            }
+
+            //把事件加入线程池
+            SP_DataRequest curr_req = fd2req[fd];
+            if(curr_req){
+                if((events_[i].events & EPOLLIN) || (events_[i].events & EPOLLPRI)){
+                    curr_req->enAbleRead();
+                }else{
+                    curr_req->enAbleWrite();
+                }
+                data_reqs.push_back(curr_req);
+                std::cout << "getEventsRequest fd==" << fd << std::endl;
+                fd2req[fd].reset();
+            }else{
+                std::cout << "invlid curr_req !" << std::endl;
+            }
         }
     }
+    return data_reqs;
 }
 
 

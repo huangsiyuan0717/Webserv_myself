@@ -6,6 +6,9 @@
 #include <condition_variable>
 #include <vector>
 
+const int MAX_THREADS = 1024;
+const int MAX_QUEUE = 65535;
+
 class ThreadTask{
 public:
     std::function<void(std::shared_ptr<void>)> func;
@@ -13,29 +16,29 @@ public:
 
 };
 
+void myHandle(std::shared_ptr<void> req);
+
 class ThreadPoll
 {
 public:
-    ThreadPoll(int thread_num, int queue_size);
-    ~ThreadPoll();
-
-    int threadpollAdd(std::shared_ptr<void> args, std::function<void(std::shared_ptr<void>)> fun);
-    int threadpollDestory();
-    void threadpollRun();
+    static int threadpollCreate(int thread_count, int queue_maxsize);
+    static int threadpollAdd(std::shared_ptr<void> args, std::function<void(std::shared_ptr<void>)> fun = myHandle);
+    static int threadpollDestory();
+    static void *threadpollRun(void *args);
 
 
 private:
-    std::mutex mtx;
-    std::condition_variable cond;
-    std::vector<std::thread> threads;
-    std::vector<ThreadTask> queue_tasks;
+    static std::mutex mtx_;
+    static std::condition_variable cond_;
+    static std::vector<std::thread> threads;
+    static std::vector<ThreadTask> queue_tasks;
 
-    int push_pos;
-    int pop_pos;
-    int thread_count_;
-    int task_count;
-    int queue_maxsize_;
-    int shut_down;
+    static int push_pos;
+    static int pop_pos;
+    static int thread_count_;
+    static int task_count;
+    static int queue_maxsize_;
+    static int shut_down;
 };
 
 

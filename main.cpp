@@ -14,10 +14,11 @@ const int PORT = 5555;
 int main(int argc, char **argv){
     handSignal();
 
+
     Epoll epoll(MAXEVENTS, LISTEN_NUM);    //创建mian_reactor
     
+    ThreadPoll::threadpollCreate(THREAD_NUM, QUEUE_SIZE);      //创建线城池
 
-    ThreadPoll threadpoll(THREAD_NUM, QUEUE_SIZE);      //创建线城池
 
     int listen_fd = sockInitAndBind(PORT);      //创建监听SOCKET
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "DataRequst.h"
+#include "ThreadPoll.h"
 
 #include <sys/socket.h>
 #include <sys/epoll.h>
@@ -9,6 +10,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+
 
 typedef std::shared_ptr<DataRequst> SP_DataRequest;
 
@@ -33,7 +35,6 @@ private:
     epoll_event *events_;
     int epoll_fd_;
     SP_DataRequest fd2req[MAXFDS];
-
 };
 
 
