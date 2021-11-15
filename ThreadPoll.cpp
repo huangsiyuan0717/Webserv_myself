@@ -44,14 +44,49 @@ int ThreadPoll::threadpollCreate(int thread_num, int queue_size){
 }
 
 int ThreadPoll::threadpollAdd(std::shared_ptr<void> args, std::function<void(std::shared_ptr<void>)> fun){
+    std::unique_lock<std::mutex> lock(mtx_);
+    if(task_count == queue_maxsize_){
+        return THREADPOOL_QUEUE_FULL;
+    }
 
+    if(shut_down){
+        return THREADPOOL_SHUTDOWN;
+    }
+
+    queue_tasks[push_pos].args = args;
+    queue_tasks[push_pos].func = fun;
+    task_count++;
+    push_pos = (push_pos + 1) % queue_maxsize_;
+    cond_.notify_one();
 }
 
 int ThreadPoll::threadpollDestory(){
-
+    mtx_.unlock();
+    shut_down = true;
+    return 0;
 }
 
 void *ThreadPoll::threadpollRun(void *args){
+    while(true){
+        ThreadTask task;
+        std::unique_lock<std::mutex> lock(mtx_);
+        while(task_count == 0 && !shut_down){
+            cond_.wait(lock, [](){return !queue_tasks.empty(); });
+        }
+
+        if(shut_down){
+            std::cout << "thread end!" << std::endl;
+            return;
+        }
+        task.args = queue_tasks[pop_pos].args;
+        task.func = queue_tasks[pop_pos].func;
+        queue_tasks[pop_pos].args.reset();
+        queue_tasks[pop_pos].func = nullptr;
+        pop_pos = (pop_pos + 1) % queue_maxsize_;
+        task_count--;
+        lock.unlock();
+        (task.func)(task.args);
+    }
 
 }
 

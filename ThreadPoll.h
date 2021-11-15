@@ -9,10 +9,17 @@
 const int MAX_THREADS = 1024;
 const int MAX_QUEUE = 65535;
 
+const int THREADPOOL_INVALID = -1;
+const int THREADPOOL_LOCK_FAILURE = -2;
+const int THREADPOOL_QUEUE_FULL = -3;
+const int THREADPOOL_SHUTDOWN = -4;
+const int THREADPOOL_THREAD_FAILURE = -5;
+const int THREADPOOL_GRACEFUL = 1;
+
 class ThreadTask{
 public:
     std::function<void(std::shared_ptr<void>)> func;
-    std::shared_ptr<void> argc;
+    std::shared_ptr<void> args;
 
 };
 
